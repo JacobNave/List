@@ -4,7 +4,6 @@ import sqlite3
 root = Tk()
 root.title("Shopping List")
 root.geometry('300x400')
-root.resizable(False, False)
 
 listFrame = Frame(root)
 
@@ -176,7 +175,7 @@ def updateListWindow():
 
 	cost = 0.0
 	for item in selected_list:
-		cost += item['cost']
+		cost += (float(item['cost'])*float(item['quantity']))
 	total_cost.set("Total Cost: ${:0.2f}".format(cost))
 
 
