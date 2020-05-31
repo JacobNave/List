@@ -6,7 +6,7 @@ root.title("Shopping List")
 root.geometry('300x400')
 root.resizable(False, False)
 
-listFrame = Frame(root, bg='white')
+listFrame = Frame(root)
 
 #Selected items from the list
 #contains dictionary for each entry with name, quantity, cost, id, and if its selected
