@@ -18,7 +18,7 @@ window_open = False
 item_count = StringVar()
 total_cost = StringVar()
 item_count.set("Number of Items: 0")
-total_cost.set("Total Cost: $0")
+total_cost.set("Total Cost: $0.00")
 
 
 #FUNCTIONS
@@ -58,6 +58,73 @@ def insert(name, quantity, cost, window):
 	updateListWindow()
 	window.destroy()
 
+def update(name, quantity, cost, item_id, window):
+	conn = sqlite3.connect("shopping_list.db")
+
+	c = conn.cursor()
+
+	c.execute("UPDATE listItems SET name = :name, quantity = :quantity, cost = :cost WHERE oid = :item_id",
+			{
+				"name": name,
+				'quantity': quantity,
+				'cost': cost,
+				'item_id': item_id
+			})
+
+	conn.commit()
+	conn.close()
+	updateListWindow()
+	window.destroy()
+
+
+def editItemInDatabase(name, quantity, cost, id):
+	edit_window = Toplevel()
+	edit_window.title('Edit Item')	
+
+	global edit_name_var
+	global edit_quantity_var
+	global edit_cost_var
+	global edit_name_label
+	global edit_quantity_label
+	global edit_cost_label
+
+	#variables
+	
+
+	edit_name_var = StringVar()
+	edit_quantity_var = IntVar()
+	edit_cost_var = DoubleVar()
+
+	edit_name_var.set(name)
+	edit_quantity_var.set(quantity)
+	edit_cost_var.set(cost)
+
+
+	#make widgets
+	edit_name_entry = Entry(edit_window, width = 30, textvariable =edit_name_var)
+	edit_quantity_entry = Entry(edit_window, width = 30, textvariable =edit_quantity_var)
+	edit_cost_entry = Entry(edit_window, width = 30, textvariable =edit_cost_var)
+
+	edit_name_label = Label(edit_window, text="Name: ")
+	edit_quantity_label = Label(edit_window, text="Quantity: ")
+	edit_cost_label = Label(edit_window, text="Cost: $")
+
+	edit_item = Button(edit_window, text='Finish Edits', command=lambda: update(edit_name_var.get(), edit_quantity_var.get(), edit_cost_var.get(), id, edit_window))
+
+	#place widgets
+	edit_name_label.grid(row =1, column=0)
+	edit_quantity_label.grid(row =2, column=0)
+	edit_cost_label.grid(row =3, column=0)
+
+	edit_name_entry.grid(row =1, column=1)
+	edit_quantity_entry.grid(row =2, column=1)
+	edit_cost_entry.grid(row =3, column=1)
+	edit_item.grid(row=4, column=0, columnspan=2)
+
+
+
+
+
 
 #Adds a shopping item to list
 def addItem(frame, name, quantity, cost, id, checkVar):
@@ -66,7 +133,7 @@ def addItem(frame, name, quantity, cost, id, checkVar):
 	row_check = Checkbutton(row_frame, variable = checkVar, onvalue=1, offvalue=0)
 	info_label = Label(row_frame, text= (str(quantity) + 'x ' + name))
 	cost_label = Label(row_frame, text= ("${:0.2f}".format(cost)))
-	edit_button = Button(row_frame, text='Edit')
+	edit_button = Button(row_frame, text='Edit', command=lambda: editItemInDatabase(name, quantity, cost, id))
 
 	#place widgets
 	row_check.pack(side=LEFT)
